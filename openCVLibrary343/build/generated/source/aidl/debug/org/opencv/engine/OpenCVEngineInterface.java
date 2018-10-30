@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: G:\\CompanyProject\\EmotionRecognition\\FaceDetectDemo-master\\FaceDetectDemo-master\\openCVLibrary343\\src\\main\\aidl\\org\\opencv\\engine\\OpenCVEngineInterface.aidl
+ * Original file: G:\\CompanyProject\\EmotionRecognition\\EmwitEmotionRecognitionDemo\\FaceDetectDemo-master\\openCVLibrary343\\src\\main\\aidl\\org\\opencv\\engine\\OpenCVEngineInterface.aidl
  */
 package org.opencv.engine;
 /**
@@ -38,17 +38,16 @@ return this;
 }
 @Override public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException
 {
-java.lang.String descriptor = DESCRIPTOR;
 switch (code)
 {
 case INTERFACE_TRANSACTION:
 {
-reply.writeString(descriptor);
+reply.writeString(DESCRIPTOR);
 return true;
 }
 case TRANSACTION_getEngineVersion:
 {
-data.enforceInterface(descriptor);
+data.enforceInterface(DESCRIPTOR);
 int _result = this.getEngineVersion();
 reply.writeNoException();
 reply.writeInt(_result);
@@ -56,7 +55,7 @@ return true;
 }
 case TRANSACTION_getLibPathByVersion:
 {
-data.enforceInterface(descriptor);
+data.enforceInterface(DESCRIPTOR);
 java.lang.String _arg0;
 _arg0 = data.readString();
 java.lang.String _result = this.getLibPathByVersion(_arg0);
@@ -66,7 +65,7 @@ return true;
 }
 case TRANSACTION_installVersion:
 {
-data.enforceInterface(descriptor);
+data.enforceInterface(DESCRIPTOR);
 java.lang.String _arg0;
 _arg0 = data.readString();
 boolean _result = this.installVersion(_arg0);
@@ -76,7 +75,7 @@ return true;
 }
 case TRANSACTION_getLibraryList:
 {
-data.enforceInterface(descriptor);
+data.enforceInterface(DESCRIPTOR);
 java.lang.String _arg0;
 _arg0 = data.readString();
 java.lang.String _result = this.getLibraryList(_arg0);
@@ -84,11 +83,8 @@ reply.writeNoException();
 reply.writeString(_result);
 return true;
 }
-default:
-{
+}
 return super.onTransact(code, data, reply, flags);
-}
-}
 }
 private static class Proxy implements org.opencv.engine.OpenCVEngineInterface
 {

@@ -28,7 +28,8 @@ public class EmotionLandmark {
     private static final String MODEL_NAME = "emotion_landmark_svm_model_181012_vectors_3.xml";
     private static final String MODEL_PATH = "file:///android_assets/emotion_landmark_svm_model_181009_78.xml";
 
-    private static final String[] EMOTION_SET = {"angry", "disgusted", "fearful", "happy", "sad", "surprised", "neutral"};
+//    private static final String[] EMOTION_SET = {"angry", "disgusted", "fearful", "happy", "sad", "surprised", "neutral"};
+    private static final String[] EMOTION_SET = {"angry", "happy", "neutral", "sad", "surprised"};
 //    private static final String[] EMOTION_SET = {"愤怒","厌恶","恐惧","高兴","悲伤","惊讶","中性"};
 
     private SVM svm;
@@ -51,7 +52,7 @@ public class EmotionLandmark {
     }
 
     public String predict(ArrayList<Point> landmarks) {
-        if (landmarks == null) {
+        if (landmarks == null || landmarks.size() == 0) {
             Log.i(TAG, "No landmark.");
             return "No emotion.";
         }

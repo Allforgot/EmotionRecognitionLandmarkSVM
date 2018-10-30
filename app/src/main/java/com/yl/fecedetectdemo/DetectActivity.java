@@ -53,7 +53,9 @@ public class DetectActivity extends AppCompatActivity implements
 
     private Landmark landmark;
     private EmotionLandmark emotionLandmark;
-    private String emotionResult;
+    private String emotionResult = "No emotion";
+
+    private int frameCount;
 
     // 手动装载openCV库文件，以保证手机无需安装OpenCV Manager
     static {
@@ -130,9 +132,9 @@ public class DetectActivity extends AppCompatActivity implements
     private void initialSVMModel() {
         try {
             InputStream is = getResources()
-                    .openRawResource(R.raw.emotion_landmark_svm_model_181012_vectors_3);
+                    .openRawResource(R.raw.emotion_landmark_svm_model_181030_5emotions_ckp);
             File svmModelDir = getDir("emotion_landmark_svm", Context.MODE_PRIVATE);
-            File svmModelFile = new File(svmModelDir, "emotion_landmark_svm_model_181012_vectors_3.xml");
+            File svmModelFile = new File(svmModelDir, "emotion_landmark_svm_model_181030_5emotions_ckp.xml");
             FileOutputStream os = new FileOutputStream(svmModelFile);
             byte[] buffer = new byte[4096];
             int bytesRead;
@@ -162,6 +164,7 @@ public class DetectActivity extends AppCompatActivity implements
     @Override
     // 这里执行人脸检测的逻辑, 根据OpenCV提供的例子实现(face-detection)
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        frameCount += 1;
         mRgba = inputFrame.rgba();
         mGray = inputFrame.gray();
         // 翻转矩阵以适配前后置摄像头
@@ -189,29 +192,30 @@ public class DetectActivity extends AppCompatActivity implements
 
         //=========== Emotion recognition ==============
 //        if (facesArray.length != 0) {
-        Bitmap bitmap = Bitmap.createBitmap(mGray.cols(),mGray.rows(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(mGray, bitmap);
-        Matrix matrix = new Matrix();
-        matrix.postScale((float)0.3,(float)0.3);
+        if (frameCount == 2) {
+            Bitmap bitmap = Bitmap.createBitmap(mGray.cols(), mGray.rows(), Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(mRgba, bitmap);
+            Matrix matrix = new Matrix();
+            matrix.postScale((float) 0.3, (float) 0.3);
 //            matrix.postRotate(90);
-        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
-                matrix, true);
-        landmark.setFaceBitmap(bitmap);
-        landmark.calculateLandmark();
-        ArrayList<Point> landmarkPoint = landmark.getLandmarks();
-        emotionResult = emotionLandmark.predict(landmarkPoint);
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
+                    matrix, true);
+            landmark.setFaceBitmap(bitmap);
+            landmark.calculateLandmark();
+            ArrayList<Point> landmarkPoint = landmark.getLandmarks();
+            emotionResult = emotionLandmark.predict(landmarkPoint);
 //            bitmap = landmark.getFaceWithLandmark(bitmap);
 //            Utils.bitmapToMat(bitmap, mRgba);
 //        }
-        //========================================
+            //========================================
 
+            frameCount = 0;
+        }
         for (Rect faceRect : facesArray) {
             Imgproc.rectangle(mRgba, faceRect.tl(), faceRect.br(), faceRectColor, 3);
             Imgproc.putText(mRgba, emotionResult, new org.opencv.core.Point(100, 200),
-                    Core.FONT_HERSHEY_SIMPLEX, 5, new Scalar(255,0,0,255), 3);
-
+                    Core.FONT_HERSHEY_SIMPLEX, 5, new Scalar(255, 0, 0, 255), 3);
         }
-
         return mRgba;
     }
 

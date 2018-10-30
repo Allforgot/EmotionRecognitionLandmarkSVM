@@ -37,6 +37,9 @@ public class Landmark {
     private Bitmap faceBitmap;   // Origin face bitmap
 
     public Landmark () {
+        if (!(new File(Constants.getFaceShapeModelPath()).exists())) {
+            Log.e(TAG, "Model file do not exist.");
+        }
         mFaceDet = new FaceDet(Constants.getFaceShapeModelPath());    // Initial the FaceDet
         Log.i(TAG, "FaceDet initial success");
 

@@ -51,7 +51,7 @@ public class EmotionLandmark {
     }
 
     public String predict(ArrayList<Point> landmarks) {
-        if (landmarks == null) {
+        if (landmarks == null || landmarks.size() == 0) {
             Log.i(TAG, "No landmark.");
             return "No emotion.";
         }
@@ -183,6 +183,9 @@ public class EmotionLandmark {
     }
 
     private ArrayList<org.opencv.core.Point> angelRotate(ArrayList<Point> landmarks) {
+        if (landmarks.size() == 0) {
+            return null;
+        }
         double angle = Math.atan2(landmarks.get(30).x - landmarks.get(27).x,
                 landmarks.get(30).y - landmarks.get(27).y);
         ArrayList<org.opencv.core.Point> landmarksNew = new ArrayList<>();

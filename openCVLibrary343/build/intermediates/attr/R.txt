@@ -198,6 +198,7 @@ int attr colorMultiSelectHighlight 0x01010391
 int attr colorPressedHighlight 0x0101038d
 int attr colorPrimary 0x01010433
 int attr colorPrimaryDark 0x01010434
+int attr colorSecondary 0x01010530
 int attr columnCount 0x01010377
 int attr columnDelay 0x010101cf
 int attr columnOrderPreserved 0x01010378
@@ -221,7 +222,9 @@ int attr contentInsetRight 0x01010456
 int attr contentInsetStart 0x01010453
 int attr contentInsetStartWithNavigation 0x01010522
 int attr contextClickable 0x010104e7
+int attr contextDescription 0x0101052e
 int attr contextPopupMenuStyle 0x01010501
+int attr contextUri 0x0101052d
 int attr controlX1 0x010103fc
 int attr controlX2 0x010103fe
 int attr controlY1 0x010103fd
@@ -840,6 +843,7 @@ int attr ringtoneType 0x010101f9
 int attr rotation 0x01010326
 int attr rotationX 0x01010327
 int attr rotationY 0x01010328
+int attr roundIcon 0x0101052c
 int attr rowCount 0x01010375
 int attr rowDelay 0x010101d0
 int attr rowEdgeFlags 0x01010241
@@ -907,11 +911,16 @@ int attr shape 0x0101019a
 int attr shareInterpolator 0x010101bb
 int attr sharedUserId 0x0101000b
 int attr sharedUserLabel 0x01010261
+int attr shortcutDisabledMessage 0x0101052b
+int attr shortcutId 0x01010528
+int attr shortcutLongLabel 0x0101052a
+int attr shortcutShortLabel 0x01010529
 int attr shouldDisableView 0x010101ee
 int attr showAsAction 0x010102d9
 int attr showDefault 0x010101fa
 int attr showDividers 0x01010329
 int attr showForAllUsers 0x010104ef
+int attr showMetadataInPreview 0x0101052f
 int attr showOnLockScreen 0x010103c9
 int attr showSilent 0x010101fb
 int attr showText 0x010104ad

@@ -10,7 +10,7 @@
 
 ### 数据集
 
-1. jaffe
+1. CK+，5 emotions (angry, happy, sad, neutral, surprised)
 
 ### 软件使用说明
 

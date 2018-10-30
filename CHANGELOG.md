@@ -6,3 +6,8 @@
 
 - Recognize emotion on smartphone but only in landscape
 
+## [1.3] - 2018-10-30
+
+### Refactor
+
+- Change jaffe dataset to CK+ and reduce 7 emotions to 5, including angry, happy, sad, neutral and surprised. Higher accuracy and more stable while not change facial expression.

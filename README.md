@@ -1,6 +1,6 @@
-## EmwitEmotionRecognitionDemo
+## EmotionRecognitionDemo
 
-中悦轻量表情识别演示程序
+轻量表情识别演示程序
 
 ### 算法实现
 

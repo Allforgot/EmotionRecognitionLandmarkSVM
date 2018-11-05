@@ -37,6 +37,10 @@ public class Landmark {
     private Bitmap faceBitmap;   // Origin face bitmap
 
     public Landmark () {
+
+    }
+
+    public void init() {
         if (!(new File(Constants.getFaceShapeModelPath()).exists())) {
             Log.e(TAG, "Model file do not exist.");
         }
@@ -48,7 +52,6 @@ public class Landmark {
         mFaceLandmarkPaint.setColor(Color.GREEN);
         mFaceLandmarkPaint.setStrokeWidth(2);
         mFaceLandmarkPaint.setStyle(Paint.Style.STROKE);
-
     }
 
     private void setLandmarks(ArrayList<Point> landmarks) {

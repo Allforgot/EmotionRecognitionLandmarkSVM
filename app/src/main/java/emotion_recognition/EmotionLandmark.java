@@ -4,18 +4,20 @@ import android.content.Context;
 import android.graphics.Point;
 import android.util.Log;
 
+import com.yl.fecedetectdemo.R;
+
 import org.opencv.core.Mat;
 import org.opencv.ml.SVM;
 import org.opencv.utils.Converters;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static emotion_recognition.Constants.getModelPath;
-//import static emotion_recognition.Constants.*;
 
 public class EmotionLandmark {
     static{
@@ -25,40 +27,53 @@ public class EmotionLandmark {
 
     private ArrayList<Point> landmarks;
 //    private static final String MODEL_NAME = "emotion_landmark_svm_model_181009_78.xml";
-    private static final String MODEL_NAME = "emotion_landmark_svm_model_181012_vectors_3.xml";
-    private static final String MODEL_PATH = "file:///android_assets/emotion_landmark_svm_model_181009_78.xml";
+//    private static final String MODEL_NAME = "emotion_landmark_svm_model_181012_vectors_3.xml";
+//    private static final String MODEL_PATH = "file:///android_assets/emotion_landmark_svm_model_181009_78.xml";
 
 //    private static final String[] EMOTION_SET = {"angry", "disgusted", "fearful", "happy", "sad", "surprised", "neutral"};
     private static final String[] EMOTION_SET = {"angry", "happy", "neutral", "sad", "surprised"};
 //    private static final String[] EMOTION_SET = {"愤怒","厌恶","恐惧","高兴","悲伤","惊讶","中性"};
+//private static final String[] EMOTION_SET = {"愤怒","高兴","专注","悲伤","惊讶"};
 
     private SVM svm;
 
-    public EmotionLandmark(String targetPath) {
-        // Initial SVM
-//        String targetPath = getModelPath(Constants.SVM_MODEL_NAME);
-//        File f = new File(targetPath);
-//        if (!f.exists()) {
-//            Log.e(TAG, "SVM model file do not exist.");
-//            throw new NullPointerException("SVM model file do not exist.");
-////            FileUtils.copyFileFromRawToOthers(context, );
-//        }
-//        else {
-//            Log.i(TAG, "Load SVM model from " + targetPath);
-//        }
+    public EmotionLandmark() {  }
 
-        svm = SVM.load(targetPath);
-        Log.i(TAG, "SVM initial success.");
+    public void setLandmarks(ArrayList<Point> landmarks) { this.landmarks = landmarks; }
+
+    public void init(Context context) {
+        try {
+            InputStream is = context.getResources()
+                    .openRawResource(R.raw.emotion_landmark_svm_model_181030_5emotions_ckp);
+            File svmModelDir = context.getDir("emotion_landmark_svm", Context.MODE_PRIVATE);
+            File svmModelFile = new File(svmModelDir, "emotion_landmark_svm_model_181030_5emotions_ckp.xml");
+            FileOutputStream os = new FileOutputStream(svmModelFile);
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+            is.close();
+            os.close();
+            svm = SVM.load(svmModelFile.getAbsolutePath());
+            Log.i(TAG, "SVM initial success.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public String predict(ArrayList<Point> landmarks) {
-        if (landmarks == null || landmarks.size() == 0) {
+    /**
+     * Predict emotion
+     * @return emotion result, one of EMOTION_SET
+     */
+    public String predict() {
+        if (this.landmarks == null || this.landmarks.size() == 0) {
             Log.i(TAG, "No landmark.");
             return "No emotion.";
         }
 
         // Get feature from landmarks
-        List<Float> featureFloatList = calFeature(landmarks);
+        List<Float> featureFloatList = calFeature(this.landmarks);
         // Convert List<Float> to mat and reshape
         Mat landmarkMat = Converters.vector_float_to_Mat(featureFloatList);
         Mat landmarkReshape = landmarkMat.reshape(1, 1);
@@ -117,6 +132,11 @@ public class EmotionLandmark {
         return new org.opencv.core.Point((xMax+xMin)/2, (yMax+yMin)/2);
     }
 
+    /**
+     * Get margin [xMin, xMax, yMin, yMax] of the landmarks
+     * @param landmarks [in]
+     * @return ArrayList [xMin, xMax, yMin, yMax]
+     */
     private List<Double> getMargin(ArrayList<org.opencv.core.Point> landmarks) {
         List<Double> xlist = new ArrayList<>();
         List<Double> ylist = new ArrayList<>();
@@ -138,8 +158,13 @@ public class EmotionLandmark {
         return margin;
     }
 
+    /**
+     * Get the classify landmark feature
+     * @param landmarks [in]
+     * @return feature list
+     */
     private List<Float> calFeature(ArrayList<Point> landmarks) {
-        List<Integer> normPoint = Arrays.asList(39, 42);  // Two eye points
+//        List<Integer> normPoint = Arrays.asList(39, 42);  // Two eye points
         List<Integer> landmarkDel = Arrays.asList(34,32,30,29,28,27,16,15,14,13,12,11,10,9,7,6,5,4,3,2,1,0);
         List<Integer> influentialPointA = Arrays.asList(45,36,41,49,48,44,49,62,35);
         List<Integer> influentialPointB = Arrays.asList(54,48,48,67,64,46,59,66,53);
@@ -183,6 +208,11 @@ public class EmotionLandmark {
         return featureFloatList;
     }
 
+    /**
+     * Correct the angle of landmark according to nose
+     * @param landmarks [in]
+     * @return the corrected landmarks
+     */
     private ArrayList<org.opencv.core.Point> angelRotate(ArrayList<Point> landmarks) {
         double angle = Math.atan2(landmarks.get(30).x - landmarks.get(27).x,
                 landmarks.get(30).y - landmarks.get(27).y);
@@ -195,6 +225,11 @@ public class EmotionLandmark {
         return landmarksNew;
     }
 
+    /**
+     * Scale landmark to [200,  ]
+     * @param landmarks [in]
+     * @return the scaled landmarks
+     */
     private ArrayList<org.opencv.core.Point> scaleLandmark(ArrayList<org.opencv.core.Point> landmarks) {
         List<Double> margin = getMargin(landmarks);  // margin = [xMin, xMax, yMin, yMax]
         double scale = 200 / (margin.get(1) - margin.get(0));

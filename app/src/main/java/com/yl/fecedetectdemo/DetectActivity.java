@@ -74,8 +74,11 @@ public class DetectActivity extends AppCompatActivity implements
 //        cameraView.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_BACK);
 
         initClassifier();
-        initialSVMModel();
+//        initialSVMModel();
+        emotionLandmark = new EmotionLandmark();
+        emotionLandmark.init(getApplicationContext());
         landmark = new Landmark();
+        landmark.init();
 
         cameraView.enableView();
         Button switchCamera = (Button) findViewById(R.id.switch_camera);
@@ -129,25 +132,25 @@ public class DetectActivity extends AppCompatActivity implements
         }
     }
 
-    private void initialSVMModel() {
-        try {
-            InputStream is = getResources()
-                    .openRawResource(R.raw.emotion_landmark_svm_model_181030_5emotions_ckp);
-            File svmModelDir = getDir("emotion_landmark_svm", Context.MODE_PRIVATE);
-            File svmModelFile = new File(svmModelDir, "emotion_landmark_svm_model_181030_5emotions_ckp.xml");
-            FileOutputStream os = new FileOutputStream(svmModelFile);
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = is.read(buffer)) != -1) {
-                os.write(buffer, 0, bytesRead);
-            }
-            is.close();
-            os.close();
-            emotionLandmark = new EmotionLandmark(svmModelFile.getAbsolutePath());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    private void initialSVMModel() {
+//        try {
+//            InputStream is = getResources()
+//                    .openRawResource(R.raw.emotion_landmark_svm_model_181030_5emotions_ckp);
+//            File svmModelDir = getDir("emotion_landmark_svm", Context.MODE_PRIVATE);
+//            File svmModelFile = new File(svmModelDir, "emotion_landmark_svm_model_181030_5emotions_ckp.xml");
+//            FileOutputStream os = new FileOutputStream(svmModelFile);
+//            byte[] buffer = new byte[4096];
+//            int bytesRead;
+//            while ((bytesRead = is.read(buffer)) != -1) {
+//                os.write(buffer, 0, bytesRead);
+//            }
+//            is.close();
+//            os.close();
+//            emotionLandmark = new EmotionLandmark(svmModelFile.getAbsolutePath());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void onCameraViewStarted(int width, int height) {
@@ -202,8 +205,8 @@ public class DetectActivity extends AppCompatActivity implements
                     matrix, true);
             landmark.setFaceBitmap(bitmap);
             landmark.calculateLandmark();
-            ArrayList<Point> landmarkPoint = landmark.getLandmarks();
-            emotionResult = emotionLandmark.predict(landmarkPoint);
+            emotionLandmark.setLandmarks(landmark.getLandmarks());
+            emotionResult = emotionLandmark.predict();
 //            bitmap = landmark.getFaceWithLandmark(bitmap);
 //            Utils.bitmapToMat(bitmap, mRgba);
 //        }

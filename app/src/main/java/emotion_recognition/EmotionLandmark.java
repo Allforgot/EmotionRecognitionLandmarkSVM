@@ -31,9 +31,9 @@ public class EmotionLandmark {
 //    private static final String MODEL_PATH = "file:///android_assets/emotion_landmark_svm_model_181009_78.xml";
 
 //    private static final String[] EMOTION_SET = {"angry", "disgusted", "fearful", "happy", "sad", "surprised", "neutral"};
-    private static final String[] EMOTION_SET = {"angry", "happy", "neutral", "sad", "surprised"};
+//    private static final String[] EMOTION_SET = {"angry", "happy", "neutral", "sad", "surprised"};
 //    private static final String[] EMOTION_SET = {"愤怒","厌恶","恐惧","高兴","悲伤","惊讶","中性"};
-//private static final String[] EMOTION_SET = {"愤怒","高兴","专注","悲伤","惊讶"};
+    private static final String[] EMOTION_SET = {"愤怒","高兴","中性","悲伤","惊讶"};
 
     private SVM svm;
 

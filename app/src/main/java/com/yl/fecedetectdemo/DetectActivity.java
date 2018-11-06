@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.YuvImage;
 import android.os.Bundle;
@@ -45,6 +48,7 @@ public class DetectActivity extends AppCompatActivity implements
         CameraBridgeViewBase.CvCameraViewListener2, View.OnClickListener {
 
     private CameraBridgeViewBase cameraView;
+    private TextView emotionResultTextview;
     private CascadeClassifier classifier;
     private Mat mGray;
     private Mat mRgba;
@@ -53,7 +57,8 @@ public class DetectActivity extends AppCompatActivity implements
 
     private Landmark landmark;
     private EmotionLandmark emotionLandmark;
-    private String emotionResult = "No emotion";
+    private String emotionResult = "无表情";
+    private final static int SHOW_EMOTION = 100;
 
     private int frameCount;
 
@@ -70,6 +75,7 @@ public class DetectActivity extends AppCompatActivity implements
         cameraView = (CameraBridgeViewBase) findViewById(R.id.camera_view);
         cameraView.setCvCameraViewListener(this); // 设置相机监听
         cameraView.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_FRONT);
+        emotionResultTextview = (TextView)findViewById(R.id.emotion_result);
         isFrontCamera = true;
 //        cameraView.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_BACK);
 
@@ -81,9 +87,21 @@ public class DetectActivity extends AppCompatActivity implements
         landmark.init();
 
         cameraView.enableView();
-        Button switchCamera = (Button) findViewById(R.id.switch_camera);
-        switchCamera.setOnClickListener(this); // 切换相机镜头，默认后置
+//        Button switchCamera = (Button) findViewById(R.id.switch_camera);
+//        switchCamera.setOnClickListener(this); // 切换相机镜头，默认后置
     }
+
+    private Handler handlerMain = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case SHOW_EMOTION:
+                    emotionResultTextview.setText(emotionResult);
+                    break;
+            }
+        }
+    };
 
     @Override
     public void onClick(View v) {
@@ -132,26 +150,6 @@ public class DetectActivity extends AppCompatActivity implements
         }
     }
 
-//    private void initialSVMModel() {
-//        try {
-//            InputStream is = getResources()
-//                    .openRawResource(R.raw.emotion_landmark_svm_model_181030_5emotions_ckp);
-//            File svmModelDir = getDir("emotion_landmark_svm", Context.MODE_PRIVATE);
-//            File svmModelFile = new File(svmModelDir, "emotion_landmark_svm_model_181030_5emotions_ckp.xml");
-//            FileOutputStream os = new FileOutputStream(svmModelFile);
-//            byte[] buffer = new byte[4096];
-//            int bytesRead;
-//            while ((bytesRead = is.read(buffer)) != -1) {
-//                os.write(buffer, 0, bytesRead);
-//            }
-//            is.close();
-//            os.close();
-//            emotionLandmark = new EmotionLandmark(svmModelFile.getAbsolutePath());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     @Override
     public void onCameraViewStarted(int width, int height) {
         mGray = new Mat();
@@ -194,7 +192,6 @@ public class DetectActivity extends AppCompatActivity implements
         Scalar faceRectColor = new Scalar(0, 255, 0, 255);
 
         //=========== Emotion recognition ==============
-//        if (facesArray.length != 0) {
         if (frameCount == 2) {
             Bitmap bitmap = Bitmap.createBitmap(mGray.cols(), mGray.rows(), Bitmap.Config.ARGB_8888);
             Utils.matToBitmap(mRgba, bitmap);
@@ -207,17 +204,15 @@ public class DetectActivity extends AppCompatActivity implements
             landmark.calculateLandmark();
             emotionLandmark.setLandmarks(landmark.getLandmarks());
             emotionResult = emotionLandmark.predict();
-//            bitmap = landmark.getFaceWithLandmark(bitmap);
-//            Utils.bitmapToMat(bitmap, mRgba);
-//        }
             //========================================
 
             frameCount = 0;
         }
+        handlerMain.sendEmptyMessage(SHOW_EMOTION);   // Update emotion result
+
+//        canvas = new Canvas(mRgba);
         for (Rect faceRect : facesArray) {
             Imgproc.rectangle(mRgba, faceRect.tl(), faceRect.br(), faceRectColor, 3);
-            Imgproc.putText(mRgba, emotionResult, new org.opencv.core.Point(100, 200),
-                    Core.FONT_HERSHEY_SIMPLEX, 5, new Scalar(255, 0, 0, 255), 3);
         }
         return mRgba;
     }

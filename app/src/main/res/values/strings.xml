@@ -1,4 +1,0 @@
-<resources>
-    <string name="app_name">EmotionRecognitionDemo</string>
-    <string name="face_detect_text">表情识别</string>
-</resources>

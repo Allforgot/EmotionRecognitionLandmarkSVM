@@ -1,4 +1,4 @@
-## EmotionRecognitionDemo
+## EmotionRecognitionDemo-Android
 
 轻量表情识别演示程序
 
@@ -16,3 +16,10 @@
 
 1. 先将 shape_predictor_68_face_landmarks.dat 文件复制到手机存储根目录
 2. 只能单方向横屏识别
+
+### 文件说明
+
+- emotion_landmark.py       模型训练代码
+- testModel.py       模型测试代码
+- CK+.tar.gz     分类好的表情图片
+- shape_predictor_68_face_landmarks.dat     关键的检测模型
